@@ -1,0 +1,51 @@
+{
+  "name": "PlotService",
+  "author": "Lea Albaugh for UIST workshop",
+  "version": "0.0.1",
+  "description": "",
+  "main": "src/server/server.ts",
+  "watch": {
+    "compileServer": {
+      "patterns": [
+        "src/server"
+      ],
+      "extensions": "ts",
+      "runOnChangeOnly": false
+    },
+    "compileFrontend": {
+      "patterns": [
+        "src/frontend"
+      ],
+      "extensions": "ts,css,html",
+      "runOnChangeOnly": false
+    }
+  },
+  "scripts": {
+    "start": "tsc",
+    "compileServer": "tsc --esModuleInterop --outDir ./dist src/server/server.ts & nodemon dist/server/server.js",
+    "compileFrontend": "webpack",
+    "watch": "npm-watch"
+  },
+  "dependencies": {
+    "node": "16.14.2",
+    "express": "^4.17.2",
+    "socket.io": "^4.4.1",
+    "socket.io-client": "^4.7.1",
+    "serialport": "^10.3.0",
+    "serve-favicon": "^2.5.0",
+    "socket.io": "^4.4.1",
+    "socket.io-client": "^4.7.1",
+    "@svgdotjs/svg.js": "^3.2.0",
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/serve-favicon": "^2.5.4",
+    "copy-webpack-plugin": "^11.0.0",
+    "nodemon": "^3.1.10",
+    "npm-watch": "^0.13.0",
+    "ts-loader": "^9.6.2",
+    "typescript": "^5.9.3",
+    "webpack": "^5.111.1",
+    "webpack-cli": "^7.2.3"
+  }
+}
