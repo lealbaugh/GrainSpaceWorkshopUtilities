@@ -22,25 +22,24 @@
   },
   "scripts": {
     "start": "tsc",
-    "compileServer": "tsc --esModuleInterop --outDir ./dist src/server/server.ts & nodemon dist/server/server.js",
+    "compileServer": "tsc --esModuleInterop --outDir ./dist/server src/server/server.ts && nodemon dist/server/server.js",
     "compileFrontend": "webpack",
     "watch": "npm-watch"
   },
   "dependencies": {
-    "node": "16.14.2",
+    "@svgdotjs/svg.js": "^3.2.0",
     "express": "^4.17.2",
-    "socket.io": "^4.4.1",
-    "socket.io-client": "^4.7.1",
+    "node": "20.19.5",
     "serialport": "^10.3.0",
     "serve-favicon": "^2.5.0",
     "socket.io": "^4.4.1",
     "socket.io-client": "^4.7.1",
-    "@svgdotjs/svg.js": "^3.2.0",
+    "tiny-typed-emitter": "^2.1.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.17",
     "@types/serve-favicon": "^2.5.4",
-    "copy-webpack-plugin": "^11.0.0",
+    "copy-webpack-plugin": "^14.0.0",
     "nodemon": "^3.1.10",
     "npm-watch": "^0.13.0",
     "ts-loader": "^9.6.2",
