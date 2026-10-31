@@ -1,0 +1,84 @@
+* {
+	box-sizing: border-box;
+	--cherry : #BF4B60;
+	--rose: #FF637F;
+	--sky : #9FC5F5;
+
+	--cream : #fffff0;
+/*	--cherry : #bf406b;
+	--rosehip : #F47373;*/
+	--good : #11eaea;
+}
+
+body {
+	height: 100vh;
+	margin: 0px;
+	font-family: "Operator Mono", Courier;
+	display: flex;
+	flex-direction: column;
+	background: var(--cream);
+	align-content: center;
+	justify-content: center;
+	align-items: center;
+}
+
+body.connected {
+	border-left: 10px solid var(--good);
+}
+
+body.streaming {
+	border-right: 10px solid var(--rose);
+}
+
+canvas {
+	outline: 1px solid black;
+	width: fit-content;
+	height: 80%;
+	background: white;
+}
+
+svg {
+	outline: 1px solid black;
+	width: fit-content;
+	height: 80%;
+	background: white;
+}
+
+.hovered {
+	background: var(--sky);
+}
+
+.hidden {
+	display: none;
+}
+
+#controls {
+	position: fixed;
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	bottom:0px;
+	justify-content: space-between;
+	padding: 1em;
+}
+
+#plotterConfig {
+	position: fixed;
+	display: flex;
+	flex-direction: column;
+	top:0px;
+	left:0px;
+	justify-content: space-between;
+	padding: 1em;
+}
+
+/*#controls * {
+	margin: 1em;
+}
+*/
+/*#fakemodeDiv {
+	position: fixed;
+	top:0px;
+	right:0px;
+	padding: 1em;
+}*/
