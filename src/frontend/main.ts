@@ -70,58 +70,14 @@ window.addEventListener("load", (e) => {
 
 	fileAcquirer(document.body, {extension:".svg", readAs:"text", callback:processAndShow} );
 
-	let controls = document.createElement("div") as HTMLDivElement;
-	controls.id = "controls";
-	document.body.appendChild(controls);
-
-	let selectorDiv = document.createElement("div") as HTMLDivElement;
-	selectorDiv.id = "portSelection";
-	controls.appendChild(selectorDiv);
-
-	let dropdown : HTMLSelectElement;
-	dropdown = document.createElement("select");
-	dropdown.id = "dropdown";
-	selectorDiv.appendChild(dropdown);
-
-	let connectButton = document.createElement("button");
-	connectButton.innerText = "connect to port";
-	selectorDiv.appendChild(connectButton);
-	
-
-	let fakemodeDiv = document.createElement("div") as HTMLDivElement;
-	fakemodeDiv.id = "fakemodeDiv";
-	let fakemode = document.createElement("input") as HTMLInputElement;
-	fakemode.type = "checkbox";
-	fakemode.id = "fakemode";
-	fakemode.setAttribute("switch", "");
-	let fakemodeLabel = document.createElement("label") as HTMLLabelElement;
-	fakemodeLabel.setAttribute("for","fakemode");
-	fakemodeLabel.innerText = "fakemode (refresh after changing)";
-	fakemodeDiv.appendChild(fakemode);
-	fakemodeDiv.appendChild(fakemodeLabel);
-	controls.appendChild(fakemodeDiv);
-	
-
-
-
-	let startStopControls = document.createElement("div");
-	startStopControls.id = "startStopControls";
-	startStopControls.classList.add("hidden");
-	controls.appendChild(startStopControls);
-
-	let goButton = document.createElement("button");
-	goButton.innerText = "go";
-
-	let stopButton = document.createElement("button");
-	stopButton.innerText = "stop";
-
-	startStopControls.appendChild(goButton);
-	startStopControls.appendChild(stopButton);
-
-
-	let plotterConfigDiv = document.createElement("div") as HTMLDivElement;
-	plotterConfigDiv.id = "plotterConfig";
-	document.body.appendChild(plotterConfigDiv);
+	const portSelectorDiv = document.getElementById("portSelection");
+	const dropdown = document.getElementById("dropdown") as HTMLSelectElement;
+	const connectButton = document.getElementById("connect") as HTMLButtonElement;
+	const fakemode = document.getElementById("fakemode") as HTMLInputElement;
+	const startStopControls = document.getElementById("startStopControls") as HTMLDivElement;
+	const goButton = document.getElementById("go") as HTMLButtonElement;
+	const stopButton = document.getElementById("stop") as HTMLButtonElement;
+	const plotterConfigDiv = document.getElementById("plotterConfig") as HTMLDivElement;
 
 	for (let key in plotterConfigValues) {
 		let entryBox = document.createElement("input");
@@ -145,7 +101,7 @@ window.addEventListener("load", (e) => {
 	let socket : Socket<serverToFrontend, frontendToServer> = io();
 
 	socket.on("portsAvailable", (portsAvailable:PortInfo[]) : void => {
-		selectorDiv.classList.remove("hidden");
+		portSelectorDiv.classList.remove("hidden");
 		dropdown.innerHTML = "";
 
 		portsAvailable.forEach((info: PortInfo, index:number) => {
