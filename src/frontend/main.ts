@@ -67,18 +67,11 @@ let displaySimpleSvg = (paths: Array<op>): Record <number, SVGLineElement> => {
 
 
 window.addEventListener("load", (e) => {
-
+// Add the drag'n'drop
 	fileAcquirer(document.body, {extension:".svg", readAs:"text", callback:processAndShow} );
 
-	const portSelectorDiv = document.getElementById("portSelection");
-	const dropdown = document.getElementById("dropdown") as HTMLSelectElement;
-	const connectButton = document.getElementById("connect") as HTMLButtonElement;
-	const fakemode = document.getElementById("fakemode") as HTMLInputElement;
-	const startStopControls = document.getElementById("startStopControls") as HTMLDivElement;
-	const goButton = document.getElementById("go") as HTMLButtonElement;
-	const stopButton = document.getElementById("stop") as HTMLButtonElement;
+// Get the config value input set up
 	const plotterConfigDiv = document.getElementById("plotterConfig") as HTMLDivElement;
-
 	for (let key in plotterConfigValues) {
 		let entryBox = document.createElement("input");
 		entryBox.type = "text";
@@ -98,10 +91,23 @@ window.addEventListener("load", (e) => {
 	plotterConfigDiv.appendChild(sendConfigButton);
 
 
+// Start some comms
 	let socket : Socket<serverToFrontend, frontendToServer> = io();
+
+	// Get refs for elements that will have listeners
+		const connectButton = document.getElementById("connect") as HTMLButtonElement;
+		const fakemode = document.getElementById("fakemode") as HTMLInputElement;
+		const goButton = document.getElementById("go") as HTMLButtonElement;
+		const stopButton = document.getElementById("stop") as HTMLButtonElement;
+
+	// ...or will have their visibility changed
+		const portSelectorDiv = document.getElementById("portSelection");
+		const startStopControls = document.getElementById("startStopControls") as HTMLDivElement;
 
 	socket.on("portsAvailable", (portsAvailable:PortInfo[]) : void => {
 		portSelectorDiv.classList.remove("hidden");
+
+		const dropdown = document.getElementById("dropdown") as HTMLSelectElement;
 		dropdown.innerHTML = "";
 
 		portsAvailable.forEach((info: PortInfo, index:number) => {
@@ -122,6 +128,9 @@ window.addEventListener("load", (e) => {
 
 	});
 
+
+// ===== Board events ==========
+
 	socket.on("boardConnected", () => {
 		connected = true;
 		document.body.classList.add("connected");
@@ -134,7 +143,6 @@ window.addEventListener("load", (e) => {
 		document.body.classList.remove("connected");
 		startStopControls.classList.add("hidden");
 	});
-
 
 	socket.on("queued", (data: move&{result:number}) => { //meaning that something has been successfully queued
 		if (data.id in drawnLinesDict) {
@@ -160,6 +168,7 @@ window.addEventListener("load", (e) => {
 		}
 	})
 
+// ===== UI events ==========
 	goButton.addEventListener("click", (e:MouseEvent)=>{
 		if (connected) {
 			streaming = true;
