@@ -144,12 +144,12 @@ window.addEventListener("load", (e) => {
 		startStopControls.classList.add("hidden");
 	});
 
-	socket.on("queued", (data: move&{result:number}) => { //meaning that something has been successfully queued
+	socket.on("queued", (data: move&{return:number}) => { //meaning that something has been successfully queued
 		if (data.id in drawnLinesDict) {
 			drawnLinesDict[data.id].setAttribute("stroke", "#ff0000");
 		}
 		if (data.id == Math.floor(data.id) || data.id-0.3 == Math.floor(data.id)) { // if this was an integer-numbered id or the third of the sub-ids
-			if (data.result >= 0 && streaming) { // needs to send even if there's no space left in the stepdance buffer, because there needs to be something waiting for it when it checks
+			if (data.return >= 0 && streaming) { // needs to send even if there's no space left in the stepdance buffer, because there needs to be something waiting for it when it checks
 				if (pathQueue.length>0) {
 					let op = pathQueue.shift();
 					console.log(op);

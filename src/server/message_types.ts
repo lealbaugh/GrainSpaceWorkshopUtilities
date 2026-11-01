@@ -13,7 +13,7 @@ export type serverToFrontend = {
 	"portsAvailable" : (portsAvailable:  PortInfo[]) => void,
 	"boardConnected" : () => void,
 	"boardDisconnected" : () => void,
-	"queued" : (data: move&{result:number}) => void,
+	"queued" : (data: move&{return:number}) => void,
 	"updateFakeMode" : (falseness : boolean) => void
 }
 
@@ -22,7 +22,7 @@ export type plotterToServer = {
 	"disconnected" : () => void,
 	"waiting" : () => void,
 	"sending" : (data: move) => void,
-	"queued" : (data: move&{result:number}) => void,
+	"queued" : (data: move&{return:number}) => void,
 }
 
 export type serverToPlotter = {

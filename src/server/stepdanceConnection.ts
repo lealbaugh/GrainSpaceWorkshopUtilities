@@ -74,7 +74,7 @@ export class stepDanceConnection extends TypedEmitter<plotterToServer> {
 			
 			dataParser.on( 'data', this.handleStepdanceResponse);
 
-			this.serialPort.emit(JSON.stringify({"name":"disable"}));
+			this.serialPort.write(JSON.stringify({"name":"disable"})+"\n");
 
 		}
 		else {
@@ -91,14 +91,15 @@ export class stepDanceConnection extends TypedEmitter<plotterToServer> {
 
 	handleStepdanceResponse(message: string) {
 		// {result: "ok", "return": 1}
+		let hook = this;
 		try {
 			let data = JSON.parse(message);
-			console.log(data);
+			// console.log(data);
 			// we *think* will will get something like {result: number}, where the number is the slots remaining in the onboard buffer.
 			// if the number is negative, our last message did *not* get added to the queue, and we should re-send it.
 			// if the number is zero, our last message *did* get added the queue, but it's out of space and we shouldn't send more.
-			if ("result" in data) {
-				let bufferRemaining : number = parseInt(data.result);
+			if ("return" in data) {
+				let bufferRemaining : number = parseInt(data.return);
 				if (bufferRemaining > 0) {
 					// that message was accepted and we have more room:
 					// update the pendingMessage and try sending it
@@ -112,17 +113,17 @@ export class stepDanceConnection extends TypedEmitter<plotterToServer> {
 					this.emit("queued", {...data, ...this.pendingMessage});
 					this.updatePending();
 					this.emit("waiting");
-					setTimeout(()=>{this.trySendingPending();}, 1000);
+					setTimeout(()=>{hook.trySendingPending();}, 1000);
 				}
 				else {
 					// that message was not accepted, and we're out of room
 					// don't get the next thing from the buffer, just wait a while and send the same thing again
 					this.emit("waiting");
-					setTimeout(()=>{this.trySendingPending();}, 1000);
+					setTimeout(()=>{hook.trySendingPending();}, 1000);
 				}
 			}
 			else {
-				console.log("No 'response' in data: ", message, data);
+				console.log("No 'return' in data: ", message, data);
 			}
 		}
 		catch {
@@ -216,12 +217,12 @@ export class stepDanceConnection extends TypedEmitter<plotterToServer> {
 
 		if (this.fake) {
 			this.fakeBuffer --;
-			setTimeout(() => {this.handleStepdanceResponse('{"result":'+this.fakeBuffer+'}');}, 100); // fake confirmation
+			setTimeout(() => {this.handleStepdanceResponse('{"return":'+this.fakeBuffer+'}');}, 100); // fake confirmation
 			setTimeout(() => {this.fakeBuffer++;}, 2000); // fake buffer-clearing
 			return "ok";
 		}
 		if (this.connected) {
-			this.serialPort.emit(JSON.stringify(formatted));
+			this.serialPort.write(JSON.stringify(formatted)+"\n");
 			return "ok";
 		}
 		else {

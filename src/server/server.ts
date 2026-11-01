@@ -11,7 +11,7 @@ import path from "path";
 import { stepDanceConnection, defaultConfig } from "./stepdanceConnection";
 
 const PORT = process.env.PORT || 3000;
-let fakemode = true;
+let fakemode = false;
 
 let portsAvailable : PortInfo[] = [];
 let machineConnected = false;
@@ -59,8 +59,8 @@ let connectToPort = (portInfo: PortInfo | "fake") => {
 		});
 
 
-		stepDance.on("queued", (data: move&{result:number})=>{
-			report("-> queued: "+data.id+" ("+data.result+" slots remaining)", "serial", 4);
+		stepDance.on("queued", (data: move&{return:number})=>{
+			report("-> queued: "+data.id+" ("+data.return+" slots remaining)", "serial", 4);
 			io.emit("queued", data);
 		});
 
