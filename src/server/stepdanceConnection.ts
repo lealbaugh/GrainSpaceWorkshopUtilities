@@ -1,4 +1,4 @@
-import { DelimiterParser, SerialPort, SerialPortOpenOptions } from 'serialport';
+import { ReadlineParser, SerialPort, SerialPortOpenOptions } from 'serialport';
 import { AutoDetectTypes } from '@serialport/bindings-cpp';
 
 import { TypedEmitter } from 'tiny-typed-emitter';
@@ -70,7 +70,7 @@ export class stepDanceConnection extends TypedEmitter<plotterToServer> {
 				self.emit("disconnected");
 			});
 
-			const dataParser = this.serialPort.pipe(new DelimiterParser({ delimiter: '\n' }));
+			const dataParser = this.serialPort.pipe(new ReadlineParser());
 			
 			dataParser.on( 'data', this.handleStepdanceResponse);
 
