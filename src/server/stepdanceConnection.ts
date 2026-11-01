@@ -74,8 +74,6 @@ export class stepDanceConnection extends TypedEmitter<plotterToServer> {
 			
 			dataParser.on( 'data', this.handleStepdanceResponse);
 
-			this.serialPort.write(JSON.stringify({"name":"disable"})+"\n");
-
 		}
 		else {
 			this.fake = true;
