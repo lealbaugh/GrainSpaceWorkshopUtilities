@@ -73,6 +73,9 @@ export class stepDanceConnection extends TypedEmitter<plotterToServer> {
 			const dataParser = this.serialPort.pipe(new DelimiterParser({ delimiter: '\n' }));
 			
 			dataParser.on( 'data', this.handleStepdanceResponse);
+
+			this.serialPort.emit(JSON.stringify({"name":"disable"}));
+
 		}
 		else {
 			this.fake = true;
@@ -87,8 +90,10 @@ export class stepDanceConnection extends TypedEmitter<plotterToServer> {
 	}
 
 	handleStepdanceResponse(message: string) {
+		// {result: "ok", "return": 1}
 		try {
 			let data = JSON.parse(message);
+			console.log(data);
 			// we *think* will will get something like {result: number}, where the number is the slots remaining in the onboard buffer.
 			// if the number is negative, our last message did *not* get added to the queue, and we should re-send it.
 			// if the number is zero, our last message *did* get added the queue, but it's out of space and we shouldn't send more.
