@@ -12,7 +12,8 @@ export let svgToOps: (fileResult: string)=>Array<op> = (fileResult:string) => {
 		const doc : Document = parser.parseFromString(fileResult, "image/svg+xml");
 
 		const svgRoot = doc.documentElement as unknown as SVGSVGElement;
-		const scale = scaleToLetter(svgRoot);
+		// const scale = scaleToLetter(svgRoot);
+		const scale = 1;
 
 		const rawPaths = Array.from(doc.querySelectorAll('path'));
 
