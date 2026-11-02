@@ -136,8 +136,8 @@ let randomTiles = makeDefaultTilesFromDOM(["a", "b"], {tileSize: 20, width: 15, 
 
 let pattern = tileCompile(fill(randomTiles, "random"));
 
-// *either* comment in the next line, *or* use https://plotterfiles.com/tools/optimizer on your output to join and make paths
-pattern = await flattenAndOptimize(pattern);
+// *either* comment in the next line, *or* use https://plotterfiles.com/tools/optimizer on your output to join into continuous paths
+// pattern = await flattenAndOptimize(pattern);
 
 pattern.addTo(document.body);
 addDownloadButton(document.body, pattern);
