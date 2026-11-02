@@ -1,7 +1,8 @@
 import parse from 'parse-svg-path';
 import { rawOp, op } from '../server/message_types';
 
-
+const targetWidth = 215.9; // 8.5" in mm
+const targetHeight = 279.4; // 11' in mm
 
 // Convert paths from svg to simple moveTo/lineTo, with absolute coords
 export let svgToOps: (fileResult: string)=>Array<op> = (fileResult:string) => {
@@ -73,9 +74,6 @@ export let svgToOps: (fileResult: string)=>Array<op> = (fileResult:string) => {
 let scaleToLetter  = (svgRoot: SVGSVGElement): number => {
 	let scale:number;
 
-	const targetWidth = 215.9; // 8.5" in mm
-	const targetHeight = 279.4; // 11' in mm
-
 	const vb = svgRoot.getAttribute('viewBox')?.split(/[\s,]+/).map(Number);
 	const vbWidth = vb && vb.length >= 4 ? vb[2] : null;
 	const vbHeight = vb && vb.length >= 4 ? vb[3] : null;
@@ -86,6 +84,18 @@ let scaleToLetter  = (svgRoot: SVGSVGElement): number => {
 	return Math.min(widthScale, heightScale);
 
 }
+
+export let cropToTarget =  (paths: Array<op>):Array<op> => {
+	paths.forEach((path:op) => {
+		path.x = Math.min(path.x, targetWidth);
+		path.x = Math.max(path.x, 0);
+
+		path.y = Math.min(path.y, targetHeight);
+		path.y = Math.max(path.y, 0);
+	})
+	return paths;
+}
+
 
 // From Anup's code!
 

@@ -1,7 +1,7 @@
 import { PortInfo } from '@serialport/bindings-cpp';
 import { frontendToServer, serverToFrontend, op, move, stepDanceConfig } from "../server/message_types";
 import { fileAcquirer } from "./fileAcquistion";
-import {svgToOps } from "./svgParsing";
+import {cropToTarget, svgToOps } from "./svgParsing";
 import { io, Socket } from "socket.io-client";
 
 const svgNS = "http://www.w3.org/2000/svg";
@@ -76,9 +76,6 @@ window.addEventListener("load", (e) => {
 				callback:(file: string) : void => {
 					let processed = svgToOps(file);
 					queueAndDisplay(processed);
-					// pathQueue = processed;
-					// console.log(pathQueue.length + " ops in queue");
-					// displaySimpleSvg(pathQueue);
 				}
 			}, 
 			{
@@ -86,10 +83,8 @@ window.addEventListener("load", (e) => {
 				readAs:"text", 
 				callback:(file: string) : void => {
 					let processed = JSON.parse(file);
+					processed = cropToTarget(processed);
 					queueAndDisplay(processed);
-					// pathQueue = processed;
-					// console.log(pathQueue.length + " ops in queue");
-					// displaySimpleSvg(pathQueue);
 				}
 			}, 
 		] 
@@ -119,19 +114,21 @@ window.addEventListener("load", (e) => {
 	plotterConfigDiv.appendChild(sendConfigButton);
 
 
-// Start some comms
-	let socket : Socket<serverToFrontend, frontendToServer> = io();
 
-	// Get refs for elements that will have listeners
+// Get refs for elements that will have listeners
 		const connectButton = document.getElementById("connect") as HTMLButtonElement;
 		const fakemode = document.getElementById("fakemode") as HTMLInputElement;
 		const goButton = document.getElementById("go") as HTMLButtonElement;
 		const stopButton = document.getElementById("stop") as HTMLButtonElement;
 
-	// ...or will have their visibility changed
+// ...or will have their visibility changed
 		const portSelectorDiv = document.getElementById("portSelection");
 		const startStopControls = document.getElementById("startStopControls") as HTMLDivElement;
 
+// Start some comms
+	let socket : Socket<serverToFrontend, frontendToServer> = io();
+
+// ===== Port selector ==========
 	socket.on("portsAvailable", (portsAvailable:PortInfo[]) : void => {
 		portSelectorDiv.classList.remove("hidden");
 
