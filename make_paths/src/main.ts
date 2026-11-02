@@ -132,10 +132,12 @@ function tileCompile<tilename extends string>(tiles: Tiles<tilename>) : Svg {
 }
 
 //  ====== Make it go ================
-// let randomTiles = makeDefaultTilesFromDOM(["a", "e"], {tileSize: 20, width: 15, height: 15});
-let randomTiles = makeDefaultTilesFromDOM(["triple_curve", "triple_intersect"], {tileSize: 30, width: 5, height: 5});
+let randomTiles = makeDefaultTilesFromDOM(["a", "b"], {tileSize: 20, width: 15, height: 15});
 
-let pattern = await flattenAndOptimize(tileCompile(fill(randomTiles, "random")));
+let pattern = tileCompile(fill(randomTiles, "random"));
+
+// *either* comment in the next line, *or* use https://plotterfiles.com/tools/optimizer on your output to join and make paths
+pattern = await flattenAndOptimize(pattern);
 
 pattern.addTo(document.body);
 addDownloadButton(document.body, pattern);
