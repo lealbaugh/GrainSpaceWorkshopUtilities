@@ -13,7 +13,7 @@ export let svgToOps: (fileResult: string)=>Array<op> = (fileResult:string) => {
 
 		const svgRoot = doc.documentElement as unknown as SVGSVGElement;
 		// const scale = scaleToLetter(svgRoot);
-		const scale = 1;
+		const scale = 200/300;
 
 		const rawPaths = Array.from(doc.querySelectorAll('path'));
 
@@ -21,51 +21,66 @@ export let svgToOps: (fileResult: string)=>Array<op> = (fileResult:string) => {
 		let currentY = 0;
 		let id = 0;
 
+		let maxX = 0;
+		let maxY = 0;
 		// console.log("rawPaths", rawPaths);
 		rawPaths.forEach((path: SVGPathElement) => {
 			let data = path.getAttribute("d");
 			let instructions = parse(data);
 
+
 			instructions.forEach((op:rawOp)=>{
 				if (op[0] == "M") {
 					currentX = (op[1]);
 					currentY = (op[2]);
+					maxX = Math.max(currentX, maxX);
+					maxY = Math.max(currentY, maxY);
 					processed.push({id: id++, type: "moveTo", x: currentX*scale, y:currentY*scale});
 				}
 				else if (op[0] == "m") {
 					currentX += (op[1]);
 					currentY += (op[2]);
+					maxX = Math.max(currentX, maxX);
+					maxY = Math.max(currentY, maxY);
 					processed.push({id: id++, type: "moveTo", x: currentX*scale, y:currentY*scale});
 				}
 				else if (op[0] == "H") {
 					currentX = (op[1]);
+					maxX = Math.max(currentX, maxX);
 					processed.push({id: id++, type: "lineTo", x: currentX*scale, y:currentY*scale});
 				}
 				else if (op[0] == "h") {
 					currentX += (op[1]);
+					maxX = Math.max(currentX, maxX);
 					processed.push({id: id++, type: "lineTo", x: currentX*scale, y:currentY*scale});
 				}
 				else if (op[0] == "V") {
 					currentY = (op[1]);
+					maxY = Math.max(currentY, maxY);
 					processed.push({id: id++, type: "lineTo", x: currentX*scale, y:currentY*scale});
 				}
 				else if (op[0] == "v") {
 					currentY += (op[1]);
+					maxY = Math.max(currentY, maxY);
 					processed.push({id: id++, type: "lineTo", x: currentX*scale, y:currentY*scale});
 				}
 				else if (op[0] == "L") {
 					currentX = (op[1]);
 					currentY = (op[2]);
+					maxX = Math.max(currentX, maxX);
+					maxY = Math.max(currentY, maxY);
 					processed.push({id: id++, type: "lineTo", x: currentX*scale, y:currentY*scale});
 				}
 				else if (op[0] == "l") {
 					currentX += (op[1]);
 					currentY += (op[2]);
+					maxX = Math.max(currentX, maxX);
+					maxY = Math.max(currentY, maxY);
 					processed.push({id: id++, type: "lineTo", x: currentX*scale, y:currentY*scale});
 				}
 			});
 		});
-
+		console.log({maxX, maxY});
 	}
 	
 	return processed;
