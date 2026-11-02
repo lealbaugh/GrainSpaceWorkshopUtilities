@@ -2,16 +2,16 @@ import { Element, G, Svg, SVG } from "@svgdotjs/svg.js";
 import { addDownloadButton, flattenAndOptimize, loadFromDOM } from "./util";
 
 // ==================== A data structure ==============================================
+type tileSet<tilename extends string> = Record<tilename, Element | G>;
 type orientation = 0 | 90 | 180 | 270; // the orientation for a given tile must be one of the cardinal directions (in degrees)
 
 type Tiles<tilename extends string> = {
 	tileSize: number,
-	tileSet: Record<tilename, Element | G>, // a mapping from a tile name to a
+	tileSet: tileSet<tilename>, // a mapping from a tile name to a
 	grid: Array<Array<[tilename, orientation]>>
 };
 
-
-// For example, here is tile data for a layout with two tiles (called simply "a" and "b")
+// For example, here is a Tiles for a layout with two tiles (called simply "a" and "b")
 // const sampleTiles : Tiles<"a" | "b"> = {
 // 	tileSize: 20,
 // 	tileSet : {
@@ -27,39 +27,26 @@ type Tiles<tilename extends string> = {
 // 	]
 // }
 
+// Random from a list.
 function randomOf<listType extends any>(list: Array<listType>) : listType {
 	return list[Math.floor(Math.random()*list.length)];
 }
 
-function makeTiles<tilename extends string>(tileSet: Record<tilename, Element | G>, params: {tileSize: number, width : number, height : number}) : Tiles<tilename> {
-	// get a list of names of tiles, to choose randomly between
-	let availableTilenames : Array<tilename> = Object.keys(tileSet) as Array<tilename>;
 
-	// make and fill a grid with random tiles, in random orientations
-	let grid : Array<Array<[tilename, orientation]>> = [];
-	for (let row=0; row<params.height; row++) {
-		let line : Array<[tilename, orientation]>= [];
-		for (let cell=0; cell<params.width; cell++) {
-			line.push([randomOf(availableTilenames), randomOf([0, 90, 180, 270])]);
-		}
-		grid.push(line);
+// Get the base "tile" svg data from what is loaded into the html
+function getTileSetFromDOM<tilename extends string>(tilenames: Array<tilename>) : tileSet<tilename> {
+	let set : Partial<tileSet<tilename>> = {};
+	for (let tilename of tilenames) {
+		set[tilename] = loadFromDOM("#"+tilename);
 	}
-	return { tileSize: params.tileSize, tileSet, grid };
+	return set as tileSet<tilename>;
 }
 
-
-function makeTilesFromDOM<tilename extends string>(tilenames: Array<tilename>, params: {tileSize: number, width : number, height : number}) : Tiles<tilename> {
+// make and fill a grid with default tiles, in default orientation
+function makeDefaultTilesFromDOM<tilename extends string>(tilenames: Array<tilename>, params: {tileSize: number, width : number, height : number}) : Tiles<tilename> {
 	// get a list of names of tiles, to choose randomly between
-	let tileSet : Record<tilename, Element | G> = (function () : Record<tilename, Element | G> {
-			let tmp : Partial<Record<tilename, Element | G>> = {};
-			for (let tilename of tilenames) {
-				tmp[tilename] = loadFromDOM("#"+tilename);
-			}
-			return tmp as Record<tilename, Element | G>;
-		})();
+	let tileSet: tileSet<tilename> = getTileSetFromDOM(tilenames);
 
-
-	// make and fill a grid with default tiles, in default orientation
 	let name : tilename = tilenames[0];
 	let dir : orientation = 0;
 	let grid : Array<Array<[tilename, orientation]>> = [];
@@ -75,9 +62,9 @@ function makeTilesFromDOM<tilename extends string>(tilenames: Array<tilename>, p
 
 
 
-
 // ====== Some ways to manipulate it ==================================
 
+// Fill the whole grid with the same tiles
 function fill<tilename extends string>(tiles: Tiles<tilename>, type: "random" | "braid") : Tiles<tilename> {
 	let tilenames = Object.keys(tiles.tileSet) as Array<tilename>;
 	tiles.grid.forEach((row, y) => {
@@ -100,6 +87,7 @@ function fill<tilename extends string>(tiles: Tiles<tilename>, type: "random" | 
 	return tiles;
 }
 
+// Comb all tiles to the same orientation
 function comb<tilename extends string>(tiles: Tiles<tilename>, newAngle: orientation) : Tiles<tilename> {
 	tiles.grid.forEach((row, y) => {
 		row.forEach((cell, x) => {
@@ -109,6 +97,7 @@ function comb<tilename extends string>(tiles: Tiles<tilename>, newAngle: orienta
 	return tiles;
 }
 
+// Comb each quadrant of the grid to its direction, resulting in a diamond-like shape
 function alignToDiamond<tilename extends string>(tiles: Tiles<tilename>) : Tiles<tilename> {
 	let firstTilename : tilename = Object.keys(tiles.tileSet)[0] as tilename;
 	tiles.grid.forEach((row, y) => {
@@ -124,8 +113,6 @@ function alignToDiamond<tilename extends string>(tiles: Tiles<tilename>) : Tiles
 
 
 // ====== And a way to compile it to the output format ================
-
-
 function tileCompile<tilename extends string>(tiles: Tiles<tilename>) : Svg {
 	let width = tiles.grid[0].length;
 	let height = tiles.grid.length;
@@ -144,11 +131,11 @@ function tileCompile<tilename extends string>(tiles: Tiles<tilename>) : Svg {
 	return composition;
 }
 
-// let randomTiles = makeTilesFromDOM(["a", "e"], {tileSize: 20, width: 15, height: 15});
-let randomTiles = makeTilesFromDOM(["triple_curve", "triple_intersect"], {tileSize: 30, width: 5, height: 5});
+//  ====== Make it go ================
+// let randomTiles = makeDefaultTilesFromDOM(["a", "e"], {tileSize: 20, width: 15, height: 15});
+let randomTiles = makeDefaultTilesFromDOM(["triple_curve", "triple_intersect"], {tileSize: 30, width: 5, height: 5});
 
-let body = document.body;
 let pattern = await flattenAndOptimize(tileCompile(fill(randomTiles, "random")));
 
-pattern.addTo(body);
-addDownloadButton(body, pattern);
+pattern.addTo(document.body);
+addDownloadButton(document.body, pattern);

@@ -1,4 +1,4 @@
-import { Element, G, Svg, SVG } from "@svgdotjs/svg.js";
+import { Element, G, Svg, SVG, Point } from "@svgdotjs/svg.js";
 import { saveAs } from 'file-saver';
 
 import { readMultilayerSvg, writeSvg, convertLength, execute, readSvg, Document, readSvgByAttributes, ColorMode } from "vpype-js";
@@ -13,6 +13,7 @@ export async function flattenAndOptimize(input : Svg, mode?: ColorMode) : Promis
 	input.svg(writeSvg(optimized, { colorMode: mode}));
 	return input;
 }
+
 
 export function loadFromDOM(selector: string) : G {
 	let list = SVG(selector).children();
