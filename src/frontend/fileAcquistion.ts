@@ -1,7 +1,7 @@
 
 type fileConfig = {extension: string, readAs: "dataURL", callback : (file: ArrayBuffer) => any} | {extension: string, readAs: "text", callback : (file: string) => any};
 
-export let fileAcquirer = (dropArea:HTMLElement, config: fileConfig ) => {
+export let fileAcquirer = (dropArea:HTMLElement, configs: Array<fileConfig> ) => {
 	let onDragOver = (e : DragEvent) => {
 		dropArea.classList.add("hovered");
 		e.preventDefault();
@@ -24,38 +24,40 @@ export let fileAcquirer = (dropArea:HTMLElement, config: fileConfig ) => {
 						if (file) {
 							console.log("reading...");
 							var fileReader = new FileReader();
-							if (file.name.endsWith(config.extension)) { // just the ones with the file type we asked for (very hacky way to ask about file type...)
-								fileReader.onload = function ( event : ProgressEvent<FileReader> ) {
-									if (event.target && event.target.result) {
-										if (config.readAs=="text") {
-											let result = event.target.result as string;
-											try {
-												config.callback(result);
+							let satisfactory :boolean = false; // does this file meet any of our criteria?
+							for (let config of configs) {
+								if (file.name.endsWith(config.extension)) { // just the ones with the file type we asked for (very hacky way to ask about file type...)
+									satisfactory = true;
+									fileReader.onload = function ( event : ProgressEvent<FileReader> ) {
+										if (event.target && event.target.result) {
+											if (config.readAs=="text") {
+												let result = event.target.result as string;
+												try {
+													config.callback(result);
+												}
+												catch (error) {
+													console.log("failed to import text file: "+file.name);
+													console.log(error);
+												}
 											}
-											catch (error) {
-												console.log("failed to import text file: "+file.name);
-												console.log(error);
+											else if (config.readAs=="dataURL") {
+												let result = event.target.result as ArrayBuffer;
+												try {
+													config.callback(result);
+												}
+												catch (error) {
+													console.log("failed to import data file: "+file.name);
+													console.log(error);
+												}
 											}
 										}
-										else if (config.readAs=="dataURL") {
-											let result = event.target.result as ArrayBuffer;
-											try {
-												config.callback(result);
-											}
-											catch (error) {
-												console.log("failed to import data file: "+file.name);
-												console.log(error);
-											}
-										}
-									}
-								};
-								if (config.readAs == "text") fileReader.readAsText(file);
-								else if (config.readAs == "dataURL") fileReader.readAsDataURL(file);
-								
+									};
+									if (config.readAs == "text") fileReader.readAsText(file);
+									else if (config.readAs == "dataURL") fileReader.readAsDataURL(file);
+									
+								}
 							}
-							else {
-								console.log("not an svg (probably)");
-							}
+							if (!satisfactory) console.log("no suitable file found -- upload an svg or a json");
 						}
 					}
 				}

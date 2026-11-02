@@ -16,9 +16,9 @@ let configControlInputs : Record<keyof stepDanceConfig, HTMLInputElement> = {};
 
 let streaming = false;
 
-let processAndShow = (file: string) : void => {
-	let processed = svgToOps(file);
-	pathQueue = processed;
+let queueAndDisplay = (paths: Array<op>):void => {
+	pathQueue = paths;
+	console.log(JSON.stringify(paths));
 	console.log(pathQueue.length + " ops in queue");
 	displaySimpleSvg(pathQueue);
 }
@@ -69,7 +69,31 @@ let displaySimpleSvg = (paths: Array<op>): Record <number, SVGLineElement> => {
 
 window.addEventListener("load", (e) => {
 // Add the drag'n'drop
-	fileAcquirer(document.body, {extension:".svg", readAs:"text", callback:processAndShow} );
+	fileAcquirer(document.body, [
+			{
+				extension:".svg", 
+				readAs:"text", 
+				callback:(file: string) : void => {
+					let processed = svgToOps(file);
+					queueAndDisplay(processed);
+					// pathQueue = processed;
+					// console.log(pathQueue.length + " ops in queue");
+					// displaySimpleSvg(pathQueue);
+				}
+			}, 
+			{
+				extension:".json", 
+				readAs:"text", 
+				callback:(file: string) : void => {
+					let processed = JSON.parse(file);
+					queueAndDisplay(processed);
+					// pathQueue = processed;
+					// console.log(pathQueue.length + " ops in queue");
+					// displaySimpleSvg(pathQueue);
+				}
+			}, 
+		] 
+	);
 
 // Get the config value input set up
 	const plotterConfigDiv = document.getElementById("plotterConfig") as HTMLDivElement;
@@ -140,6 +164,9 @@ window.addEventListener("load", (e) => {
 			let op = pathQueue.shift();
 			console.log(op);
 			socket.emit("op", op);
+		}
+		else {
+			console.log("No more data needed to send.")
 		}
 	}
 

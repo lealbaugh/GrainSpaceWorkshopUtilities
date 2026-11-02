@@ -7,20 +7,40 @@ Run with:
 Visit:
 http://localhost:3000/
 
-Try:
-1) Drag and drop an 8.5x11 svg file with *path* elements (not polyline). Paths should display in the white box on the page. Console should log "[n] ops in queue", corresponding to the number of moveTo/lineTo operations in the file.
 
-2) If the "fakemode" tickbox is ticked, the server will send it to a fake buffer (with ten slots and a 1-second delay in clearing those slots). If you hit the "go" button, you should see a) a red line at the right edge of the screen, indicating "sending," and b) line segments turning red as they are accepted by the fake buffer.
+Drag and drop a file. Either:
 
-3) Un-tick "fakemode" and refresh the page. You should get a dropdown menu of serial ports to connect to. Select the serial port of the stepdance board and hit "connect to port". Hopefully, the board should connect and a blue line should appear at the left side of the browser to indicate connected.
+## SVG file
+An SVG file with only straight-line *path* elements (not lines or polylines), such as:
+```svg
+<path d="M60.2,56.8l50.9,50.9l50.9,50.9 M48.7,71.8l62.4,36l62.4,36 M41.5,89.1l69.5,18.6l69.5,18.6 M39.1,107.8h72h72
+	 M41.5,126.4l69.5-18.6l69.5-18.6 M48.7,143.8l62.4-36l62.4-36 M60.2,158.7l50.9-50.9l44.2-44.2l6.7-6.7"/>
+```
+The size will be scaled to fit an 8.5"x11" canvas. If you don't want yours scaled, make sure `viewBox="0 0 612 792"` and specify your dimensions in mm.
 
-4) With the actual board connected, try hitting "go" again. Hopefully the paths get sent and the plotter does its thing.
+## JSON file
+JSON file with a list of lineTo/moveTo operations
 
-5) You can change the speed of moves (separate values for drawing vs pen-up/pen-down) and the pen height with the entry boxes and button at the left of the screen. These get applied at the sending-to-board stage, so if you "stop" sending, update the config, and "go" again, the new values should be part of the operations that haven't been queued onto the board yet. (Which could be laggy since I'm just shoving as much into the queue as it will hold. Ideally, we'd choose how much to queue based on like, not terribly many linear inches in the buffer at any given time, but this is low priority...)
-
-
-
-I think these are true:
-1) The board buffer is bigger than 10
-2) the serial port name always contains "usbmodem"
-3) 
+```json
+[
+	{
+		"id": 0, // a unique sequential number
+		"type": "moveTo", // "lineTo" or "moveTo"
+		"x": 1, // number in mm 
+		"y": 2 // number in mm
+	},
+	{
+		"id": 1, // a unique sequential number
+		"type": "lineTo", // "lineTo" or "moveTo"
+		"x": 10, // number in mm 
+		"y": 23 // number in mm
+	},
+	{
+		"id": 2, // a unique sequential number
+		"type": "lineTo", // "lineTo" or "moveTo"
+		"x": 1, // number in mm 
+		"y": 40 // number in mm
+	},
+	// etc
+]
+```
