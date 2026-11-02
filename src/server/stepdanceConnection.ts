@@ -72,7 +72,9 @@ export class stepDanceConnection extends TypedEmitter<plotterToServer> {
 
 			const dataParser = this.serialPort.pipe(new ReadlineParser());
 			
-			dataParser.on( 'data', this.handleStepdanceResponse);
+			dataParser.on( 'data', (data:string) => {
+				this.handleStepdanceResponse(data);
+			});
 
 		}
 		else {
@@ -92,6 +94,7 @@ export class stepDanceConnection extends TypedEmitter<plotterToServer> {
 		let hook = this;
 		try {
 			let data = JSON.parse(message);
+			this.emit("serialMessage", message);
 			// console.log(data);
 			// we *think* will will get something like {result: number}, where the number is the slots remaining in the onboard buffer.
 			// if the number is negative, our last message did *not* get added to the queue, and we should re-send it.
@@ -101,22 +104,22 @@ export class stepDanceConnection extends TypedEmitter<plotterToServer> {
 				if (bufferRemaining > 0) {
 					// that message was accepted and we have more room:
 					// update the pendingMessage and try sending it
-					this.emit("queued", {...data, ...this.pendingMessage});
-					this.updatePending();
-					this.trySendingPending();
+					hook.emit("queued", {...data, ...hook.pendingMessage});
+					hook.updatePending();
+					hook.trySendingPending();
 				}
 				else if (bufferRemaining == 0) {
 					// that message was accepted, but we're out of room:
 					// update the pendingMessage, but wait a while before trying to send it
-					this.emit("queued", {...data, ...this.pendingMessage});
-					this.updatePending();
-					this.emit("waiting");
+					hook.emit("queued", {...data, ...hook.pendingMessage});
+					hook.updatePending();
+					hook.emit("waiting");
 					setTimeout(()=>{hook.trySendingPending();}, 1000);
 				}
 				else {
 					// that message was not accepted, and we're out of room
 					// don't get the next thing from the buffer, just wait a while and send the same thing again
-					this.emit("waiting");
+					hook.emit("waiting");
 					setTimeout(()=>{hook.trySendingPending();}, 1000);
 				}
 			}
@@ -124,8 +127,8 @@ export class stepDanceConnection extends TypedEmitter<plotterToServer> {
 				console.log("No 'return' in data: ", message, data);
 			}
 		}
-		catch {
-			console.log(message);
+		catch (e) {
+			console.log(e);
 		}
 	}
 

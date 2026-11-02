@@ -52,33 +52,43 @@ svg {
 	display: none;
 }
 
+
 #controls {
 	position: fixed;
 	width: 100%;
 	display: flex;
 	flex-direction: row;
 	bottom:0px;
-	justify-content: space-between;
+	justify-content: flex-end;
 	padding: 1em;
+}
+
+#startStopControls * {
+	margin: 0.5em;
 }
 
 #plotterConfig {
 	position: fixed;
-	display: flex;
-	flex-direction: column;
 	top:0px;
 	left:0px;
-	justify-content: space-between;
 	padding: 1em;
 }
 
-/*#controls * {
-	margin: 1em;
+#plotterConfig label,input {
+	display: inline;
 }
-*/
-/*#fakemodeDiv {
-	position: fixed;
-	top:0px;
-	right:0px;
-	padding: 1em;
-}*/
+
+#plotterConfig input {
+	width: 4em;
+	margin: 0.5em 0.5em 0.5em 0em;
+}
+
+
+#plotterConfig {
+	display: none;
+}
+
+#fakemodeDiv {
+	display: none;
+}
+

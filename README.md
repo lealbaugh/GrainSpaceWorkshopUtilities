@@ -17,3 +17,10 @@ Try:
 4) With the actual board connected, try hitting "go" again. Hopefully the paths get sent and the plotter does its thing.
 
 5) You can change the speed of moves (separate values for drawing vs pen-up/pen-down) and the pen height with the entry boxes and button at the left of the screen. These get applied at the sending-to-board stage, so if you "stop" sending, update the config, and "go" again, the new values should be part of the operations that haven't been queued onto the board yet. (Which could be laggy since I'm just shoving as much into the queue as it will hold. Ideally, we'd choose how much to queue based on like, not terribly many linear inches in the buffer at any given time, but this is low priority...)
+
+
+
+I think these are true:
+1) The board buffer is bigger than 10
+2) the serial port name always contains "usbmodem"
+3) 

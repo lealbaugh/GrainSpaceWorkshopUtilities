@@ -23,6 +23,7 @@ export type plotterToServer = {
 	"waiting" : () => void,
 	"sending" : (data: move) => void,
 	"queued" : (data: move&{return:number}) => void,
+	"serialMessage" : (data: string) => void,
 }
 
 export type serverToPlotter = {
@@ -34,7 +35,7 @@ export interface stepDanceConfig extends Record<string, number> {drawSpeed:numbe
 // ====== What does data look like? ===========
 
 // rawOp is what we get from the small third-party `parse-svg-path` library.
-export type rawOp = ["M"|"L"|"m"|"l", number, number];
+export type rawOp = ["M"|"L"|"m"|"l"|"H"|"h"|"V"|"v", number, number];
 
 // op is the main interchange format we want to use (e.g. could come from raw json instead of an svg)
 export type op = {type: "moveTo"|"lineTo", id: number, x: number, y:number};

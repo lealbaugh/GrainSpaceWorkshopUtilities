@@ -6,6 +6,7 @@ import { io, Socket } from "socket.io-client";
 
 const svgNS = "http://www.w3.org/2000/svg";
 
+const firstSendSize = 1;
 let connected : boolean = false;
 let pathQueue : Array<op> = [];
 
@@ -83,8 +84,11 @@ window.addEventListener("load", (e) => {
 		entryBoxLabel.setAttribute("for",key);
 		entryBoxLabel.innerText = key;
 
-		plotterConfigDiv.appendChild(entryBoxLabel);
+		let br = document.createElement("br");
+
 		plotterConfigDiv.appendChild(entryBox);
+		plotterConfigDiv.appendChild(entryBoxLabel);
+		plotterConfigDiv.appendChild(br);
 	}
 	let sendConfigButton = document.createElement("button");
 	sendConfigButton.innerText = "update plotterConfig";
@@ -131,6 +135,14 @@ window.addEventListener("load", (e) => {
 
 // ===== Board events ==========
 
+	let sendNextOp : ()=> void = ()=> {
+		if (pathQueue.length>0) {
+			let op = pathQueue.shift();
+			console.log(op);
+			socket.emit("op", op);
+		}
+	}
+
 	socket.on("boardConnected", () => {
 		connected = true;
 		document.body.classList.add("connected");
@@ -149,12 +161,8 @@ window.addEventListener("load", (e) => {
 			drawnLinesDict[data.id].setAttribute("stroke", "#ff0000");
 		}
 		if (data.id == Math.floor(data.id) || data.id-0.3 == Math.floor(data.id)) { // if this was an integer-numbered id or the third of the sub-ids
-			if (data.return >= 0 && streaming) { // needs to send even if there's no space left in the stepdance buffer, because there needs to be something waiting for it when it checks
-				if (pathQueue.length>0) {
-					let op = pathQueue.shift();
-					console.log(op);
-					socket.emit("op", op);
-				}
+			if (data.return >= 0 && streaming) { // needs to send even if there's no space left in the stepdance buffer ("0"), because there needs to be something waiting for it when it checks
+				sendNextOp();
 			}
 		}
 	});
@@ -173,10 +181,8 @@ window.addEventListener("load", (e) => {
 		if (connected) {
 			streaming = true;
 			document.body.classList.add("streaming");
-			if (pathQueue.length>0) {
-				let op = pathQueue.shift();
-				console.log(op);
-				socket.emit("op", op);
+			for (let i=0; i<firstSendSize; i++) {
+				sendNextOp();
 			}
 		}
 	});

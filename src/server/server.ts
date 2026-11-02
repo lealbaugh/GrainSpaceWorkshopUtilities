@@ -29,8 +29,13 @@ const server = express()
 // ======== serial port discovery =========
 SerialPort.list().then((ports : PortInfo[]) => {
 	portsAvailable = ports;
+	for (var i=0;  i<ports.length; i++) {
+		if (ports[i].path.indexOf("Stepdance1") > -1) {
+			connectToPort(ports[i]);
+		}
+	}
 	let paths: Array<string> = ports.reduce((acc, curr)=>{acc.push(curr.path); return acc}, []);
-	report(paths.join(", "), "serial", 3);
+	report("Available: "+paths.join(", "), "serial", 3);
 	io.emit("portsAvailable", portsAvailable);
 });
 
@@ -56,6 +61,10 @@ let connectToPort = (portInfo: PortInfo | "fake") => {
 
 		stepDance.on("waiting", ()=>{
 			report("...waiting...", "serial", 4);
+		});
+
+		stepDance.on("serialMessage", (message: string)=>{
+			report("Message: "+message, "serial", 2);
 		});
 
 
