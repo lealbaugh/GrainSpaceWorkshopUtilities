@@ -2,15 +2,18 @@ import { fileAcquirer } from "./fileAcquistion";
 import {cropToTarget, svgToOps } from "./svgParsing";
 
 import { op } from "../server/message_types";
+import { queue } from "./queue";
 
 
 const svgNS = "http://www.w3.org/2000/svg";
 
 export class fileViewer {
 	drawnLinesDict : Record <number, SVGLineElement> = {};
-	pathQueue : Array<op> = [];
+	pathQueue : queue<op>;
+	// pathQueue : Array<op> = [];
 
-	constructor(dropDiv:HTMLElement, viewMode: "SVG"|"canvas") {
+	constructor(dropDiv:HTMLElement, queue: queue<op>, viewMode: "SVG"|"canvas") {
+		this.pathQueue = queue;
 		fileAcquirer(dropDiv, [
 				{
 					extension:".svg", 
@@ -34,11 +37,10 @@ export class fileViewer {
 	}
 
 	queueAndDisplay = (paths: Array<op>, viewMode: "SVG"|"canvas"):void => {
-		this.pathQueue = paths;
-		console.log(JSON.stringify(paths));
-		console.log(this.pathQueue.length + " ops in queue");
-		if (viewMode == "SVG") this.displaySimpleSvg(this.pathQueue);
-		else if (viewMode == "canvas") this.displayOnCanvas(this.pathQueue);
+		this.pathQueue.setData(paths);
+
+		if (viewMode == "SVG") this.displaySimpleSvg(paths);
+		else if (viewMode == "canvas") this.displayOnCanvas(paths);
 	}
 
 	displayOnCanvas  = (paths: Array<op>):void => {
