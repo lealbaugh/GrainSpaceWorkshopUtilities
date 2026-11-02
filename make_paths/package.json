@@ -1,52 +1,32 @@
 {
-  "name": "PlotService",
-  "author": "Lea Albaugh for UIST workshop",
-  "version": "0.0.1",
-  "description": "",
-  "main": "src/server/server.ts",
+  "name": "grains",
+  "version": "0.1.0",
   "watch": {
-    "compileServer": {
+    "compile": {
       "patterns": [
-        "src/server"
+        "src"
       ],
       "extensions": "ts",
-      "runOnChangeOnly": false
-    },
-    "compileFrontend": {
-      "patterns": [
-        "src/frontend"
-      ],
-      "extensions": "ts,css,html",
       "runOnChangeOnly": false
     }
   },
   "scripts": {
-    "start": "tsc",
-    "compileServer": "tsc --esModuleInterop --outDir ./dist/server src/server/server.ts && nodemon dist/server/server.js",
-    "compileFrontend": "webpack",
-    "watch": "npm-watch"
-  },
-  "dependencies": {
-    "@svgdotjs/svg.js": "^3.2.0",
-    "express": "^4.17.2",
-    "node": "20.19.5",
-    "parse-svg-path": "^0.2.0",
-    "serialport": "^10.3.0",
-    "serve-favicon": "^2.5.0",
-    "socket.io": "^4.4.1",
-    "socket.io-client": "^4.7.1",
-    "tiny-typed-emitter": "^2.1.0"
+    "watch": "npm-watch",
+    "compile": "webpack & http-server dist"
   },
   "devDependencies": {
-    "@types/express": "^4.17.17",
-    "@types/serve-favicon": "^2.5.4",
-    "@types/svg-path-parser": "^1.1.6",
-    "copy-webpack-plugin": "^14.0.0",
-    "nodemon": "^3.1.10",
-    "npm-watch": "^0.13.0",
-    "ts-loader": "^9.6.2",
-    "typescript": "^5.9.3",
-    "webpack": "^5.111.1",
-    "webpack-cli": "^7.2.3"
+    "@types/file-saver": "^2.0.7",
+    "copy-webpack-plugin": "^11.0.0",
+    "http-server": "^14.1.1",
+    "npm-watch": "^0.11.0",
+    "ts-loader": "^9.4.4",
+    "typescript": "^5.4.0",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "@svgdotjs/svg.js": "^3.2.5",
+    "file-saver": "^2.0.5",
+    "vpype-js": "^0.1.0"
   }
 }

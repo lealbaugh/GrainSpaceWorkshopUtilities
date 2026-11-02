@@ -4,7 +4,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 module.exports = {
   mode: 'development',
   entry: {
-    main: './src/frontend/main.ts'
+    "main": './src/main.ts'
   },
   module: {
     rules: [
@@ -20,13 +20,12 @@ module.exports = {
   },
   output: {
     filename: '[name].js',
-    path: path.resolve(__dirname, 'dist/frontend'),
+    path: path.resolve(__dirname, 'dist/'),
   },
-  devtool: "source-map",
   plugins: [
     new CopyPlugin({
       patterns: [
-        { from: "src/frontend/", to: ".", globOptions: {ignore: ['**/*.ts', '**/.*']}},
+        { from: "./src/", to: ".", globOptions: {ignore: ['**/*.ts']}},
       ],
     }),
   ]
